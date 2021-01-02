@@ -172,7 +172,7 @@ for key in dist:
     newlist.append( dist[key] )
     print('appending', key, 'to', dist)
 
-print(newlist)
+print('populated newlist:', newlist)
 
 '''
 assigns address keys from dist to list distList
@@ -235,7 +235,7 @@ def findClosest(row):
 
 
 '''
-call findShortestInRow
+call findClosest()
 '''
 
 findClosest( 1 )
@@ -252,12 +252,41 @@ compare starting index to
 print( '\nkeys are as follows:\n', dist.keys() )
 
 '''
-List of packages on truck 1
+List of packages on trucks
 '''
 
-truck1 = [1, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 19, 20, 21]
-truck2 = [3, 18 ,36, 38]
-truck3 = []
+trucks = [1, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 19, 20, 21, 2, 3, 12, 18, 22, 24, 26, 27, 29, 30, 31, 33, 36, 38, 6, 23, 25, 28, 32, 34, 35, 37, 39, 40]
+
+truck1 = [1, 4, 5, 8, 7, 10, 11, 13, 14, 15, 16, 17, 19, 20, 21] #leaves at 08:00
+
+#The wrong delivery address for package #9, Third District Juvenile Court,
+# will be corrected at 10:20 a.m. The correct address is “410 S State St., Salt Lake City, UT 84111”.
+# You may assume that WGUPS knows the address is incorrect and when it will be corrected.
+
+truck2 = [2, 3, 12, 18, 22, 24, 26, 27, 29, 30, 31, 33, 36, 38] #leaves at 08:00
+truck3 = [6, 9, 23, 25, 28, 32, 34, 35, 37, 39, 40] #leaves at 09:05
+
+
+'''
+Dict for correcting bad addresses
+'''
+
+badAdd = {}
+
+
+def updateAddress(package):
+    print('Package Number:', package)
+    print('Address:', returnDistAddress(package))
+    print('Enter new address:')
+    newAddress = '410 S State St., Salt Lake City, UT 84111'
+    addSplit = newAddress.split('.')
+    print(addSplit[0])
+    for j in range(len(distList)):
+        if addSplit[0] in distList[j]:
+            print( 'Package', package, 'updated to address ID:', j )
+            #packageAndID[i] = j
+
+
 
 '''
 Loops through the list of packages and their corresponding distances from each other
@@ -300,11 +329,15 @@ used = neighbors()
 packageAndID = neighbors()
 correspondingAdd = []
 
-for i in packageAndID:
-    correspondingAdd[i] = packageAndID[7]
 
-for i in truck1:
-    for j in range( len( distList ) ):
+print('length of distlist:', len(distList))
+
+'''
+FIXME!!!!!!! NEEDS TO ASSIGN ALL STOPS WITH AN ADDRESS INDEX
+'''
+
+for i in trucks:
+    for j in range(len(distList)):
         if packageFile.search( f'{i}' )[0] in distList[j]:
             print( 'package', i, 'located at address ID:', j )
             packageAndID[i] = j
@@ -313,16 +346,20 @@ for i in truck1:
 print('package and ID:', packageAndID)
 
 def findClosestOnTruck(input, truck):
+    print(newlist)
     shortest = 100
     print('working on', input)
     if input == 0:
         print('0!')
+        print(newlist[input][0][0])
         for j in range( 27 ):
             if newlist[input][0][0] == 0.0:
+                print( 'zero')
                 for i in range( 27 ):
                     if float( newlist[0][0][j] ) < float( shortest ):
                         shortest = float( newlist[input][0][j] )
             elif newlist[0][0][j] != '' and newlist[0][0][j] != '0.0':
+                print( 'valid' )
                 for key, value in packageAndID.items():
                     if j == value:
                         if key in truck:
@@ -335,13 +372,15 @@ def findClosestOnTruck(input, truck):
                                 print( 'new shortest distance for package', input, ':', shortest, 'found at index', j,
                                        'which belongs to', key, 'at', returnDistAddress( j ) )
             elif newlist[0][0][j] == '':
-                print([0], [j], 'is empty')
-                print('inverse is', newlist[j][0][0])
+                print('empty')
+                print(packageAndID)
+                #print([0], [j], 'is empty')
+                #print('inverse is', newlist[j][0][0])
                 #print('inverse of', j, ':', newlist[j][0][input])
                 for key, value in packageAndID.items():
                     if j == value:
                         if key in truck:
-                            print( input, 'On Truck! Package', key )
+                            print( input, 'Leaving the HUB! Checking package', key )
                             print( 'key:', key )
                             if float( newlist[j][0][0] ) < float( shortest ):
                                 shortest = float( newlist[j][0][0] )
@@ -353,15 +392,17 @@ def findClosestOnTruck(input, truck):
     else:
         print( 'working on package:', input, 'with an address of:', packageAndID[input] )
         for j in range( 27 ):
+            print(j)
             if newlist[packageAndID[input]][0][0] == 0.0:
                 for i in range( 27 ):
                     if float( newlist[input][0][j] ) < float( shortest ):
                         shortest = float( newlist[input][0][j] )
             elif newlist[packageAndID[input]][0][j] != '' and newlist[packageAndID[input]][0][j] != '0.0':
+                print(newlist[packageAndID[input]][0][j])
                 for key, value in packageAndID.items():
                     if j == value:
                         if key in truck:
-                            print( value, 'On Truck! Package', key )
+                            print( input, 'On Truck! Package', key )
                             print( 'Key:', key )
                             if float( newlist[packageAndID[input]][0][j] ) < float( shortest ):
                                 shortest = float( newlist[packageAndID[input]][0][j] )
@@ -370,13 +411,15 @@ def findClosestOnTruck(input, truck):
                                 print( 'new shortest distance for package', input, ':', shortest, 'found at index', j,
                                        'which belongs to', key, 'at', returnDistAddress( j ) )
             elif newlist[packageAndID[input]][0][j] == '':
-                print([key], [j], 'is empty!')
-                print('inverse is', newlist[j][0][packageAndID[input]])
+                print("it's one of those quotes", j)
+                print(newlist[j][0][packageAndID[input]])
+                #print([key], [j], 'is empty!')
+                #print('inverse is', newlist[j][0][packageAndID[input]])
                 #print('inverse of', j, ':', newlist[j][0][input])
                 for key, value in packageAndID.items():
                     if j == value:
                         if key in truck:
-                            print( input, 'On Truck! Package', key )
+                            print( value, 'On Truck! Package', key )
                             print( 'key:', key )
                             if float( newlist[j][0][packageAndID[input]] ) < float( shortest ):
                                 shortest = float( newlist[j][0][packageAndID[input]] )
@@ -392,9 +435,11 @@ def findClosestOnTruck(input, truck):
 ADD FUNCTIONALITY OF CURRENT STOP AND TO CONTINUE SEARCHING FOR THE CLOSEST NEIGHBOR FOR NEXT CURRENT STOP
 '''
 class stops:
+    correctedBadAdd = False
     currentStop = 0
     mileage = 0.0
     time = 800
+    addedTime = 0
 
 
 listSize = len(truck1)
@@ -402,60 +447,84 @@ listSize = len(truck1)
 used = neighbors()
 
 
-def stopOrder(input):
-    findClosestOnTruck(input, truck1 )
+def stopOrder(input, truck):
+    findClosestOnTruck(input, truck )
     quickest = 100
     quickIndex = 0
     print('Closest before:', closest)
+    print(len(closest))
+    print(packageAndID)
     for i in closest:
         if closest[i] < quickest and i not in used:
-            print( 'Closest neighbor for', input, 'on the truck: Package', neighborsList.__getitem__(input), 'with a distance of', closest.__getitem__(input) )
-            print(i)
-            quickest = closest[i]
+            print( 'Closest neighbor for package', input, 'on the truck: Package', neighborsList.__getitem__(input), 'with a distance of', closest.__getitem__(input) )
+            quickest = closest.__getitem__(input)
             print('quickest is:', quickest)
             quickIndex = neighborsList.__getitem__(input)
+            print('quickindex:', quickIndex)
             stops.mileage += float( closest[i] )
-            stops.time += float(closest[i] / .3)
-            used.add( quickIndex, closest[i] )
+            stops.addedTime += float(closest[i] / .3)
+            used.add( quickIndex, closest.__getitem__(input) )
             print( 'used', used )
             print('Closest:', closest)
     print(closest)
     print( 'quickindex is', quickIndex )
     print('deleting:', quickIndex)
-    truck1.remove(quickIndex)
-    print(truck1)
+    truck.remove(quickIndex)
+    print(truck)
     print('mileage', stops.mileage)
-    print('time', stops.time)
+    print('Added Time', stops.addedTime)
     stops.currentStop = quickIndex
+
+def returnToHub(stop):
+    print('Distance from last stop to HUB:', newlist[packageAndID[stop]][0][0])
+    stops.mileage += float( newlist[packageAndID[stop]][0][0] )
+    stops.addedTime += float( (newlist[packageAndID[stop]][0][0])) / .3
+    print('Final Mileage', stops.mileage)
+    finalTime = stops.time + stops.addedTime / 60 * 100
+    print('Final Time:', finalTime)
+    if finalTime > 1020:
+        print('Past 10:20')
+        stops.correctedBadAdd = True
+    print('Package 9 Corrected yet?', stops.correctedBadAdd)
+    if int( finalTime ) < 1000:
+        print( 'Finishing Time: ' + '0' + finalTime.__str__()[0] + ':' + finalTime.__str__()[1] + finalTime.__str__()[2])
+    else:
+        print( 'Finishing Time: ' + finalTime.__str__()[0] + finalTime.__str__()[1] + ':' + finalTime.__str__()[2] + finalTime.__str__()[3])
+    stops.currentStop = 0
 
 
 while len(truck1) > 0:
-    stopOrder(stops.currentStop)
+    stopOrder(stops.currentStop, truck1)
     print( 'remaining list:', truck1 )
+    if len(truck1) == 0:
+        print('Out of Stops. Returning to HUB')
+        returnToHub(stops.currentStop)
 
-
-
-for i in range(len(truck1)):
-    stopOrder(stops.currentStop)
-    print( 'remaining list:', truck1 )
-
-'''packageAndDist = {}
-
-for i in truck1:
-    packageAndDist[i] = packageFile.search(f'{i}')[0]
-    for j in range( len( distList )):
-        if j > 0:
-            if packageFile.search(f'{i}')[0] in distList[j]:
-                print('package', i, 'located at address ID:', j)'''
-'''
-print(neighborsList)
-print( 'used', used )'''
 
 '''Finds package ID and searches through distList for the same address and prints out the addressId'''
 
-'''print(packageAndID)
+print(packageAndID)
 
+'''
 print(packageAndID[7])
 '''
 
-print(neighborsList)
+
+while len( truck2 ) > 0:
+    stopOrder( stops.currentStop, truck2 )
+    print( 'remaining list:', truck2 )
+    if len( truck2 ) == 0:
+        print('Out of Stops. Returning to HUB')
+        returnToHub( stops.currentStop )
+
+
+while len( truck3 ) > 0:
+    stopOrder( stops.currentStop, truck3 )
+    print( 'remaining list:', truck3 )
+    if len( truck3 ) == 0:
+        print('Out of Stops. Returning to HUB')
+        returnToHub( stops.currentStop )
+
+
+if stops.correctedBadAdd is True:
+    updateAddress(9)
